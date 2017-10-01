@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "postgraphql": "^3.5.0"
+  }
+}
