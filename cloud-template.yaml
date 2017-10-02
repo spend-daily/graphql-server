@@ -137,7 +137,7 @@ Resources:
           - Resource: !Join
             - ":"
             - - "arn:aws:codepipeline:us-west-2:181782121001"
-              - !Ref GraphQLServerPipeline
+              - !Ref Pipeline
             Effect: Allow
             Action:
               - "codepipeline:PutJobSuccessResult"
