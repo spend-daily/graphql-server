@@ -1,5 +1,13 @@
 {
+  "name": "graphql-server",
+  "version": "0.1.0",
+  "description": "A GraphQL server for the transactions database",
+  "main": "lib/index.js",
+  "license": "MIT",
   "dependencies": {
     "postgraphql": "^3.5.0"
+  },
+  "scripts": {
+    "build": "rm -rf lib && babel src -d lib"
   }
 }
