@@ -147,3 +147,54 @@ Resources:
             Action:
               - "rds:*"
               - "logs:*"
+
+  GraphQLServerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - !Ref GraphQLServerPolicy
+        - !ImportValue spend-daily-global-vpc-policy
+
+  GraphQLServer:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: lib.default
+      Role: !GetAtt GraphQLServerRole.Arn
+      Runtime: nodejs6.10
+      Timeout: 30
+      Environment:
+        Variables:
+          DB_USERNAME: !ImportValue spend-daily-global-db-user
+          DB_PASSWORD: !ImportValue spend-daily-global-db-password
+          DB_NAME: spend
+          DB_ADDRESS: !ImportValue spend-daily-global-db-address
+          DB_PORT: !ImportValue spend-daily-global-db-port
+      VpcConfig:
+        SecurityGroupIds:
+          - !ImportValue spend-daily-global-security-group-id
+        SubnetIds:
+          - !ImportValue spend-daily-global-subnet-us-west-2a
+          - !ImportValue spend-daily-global-subnet-us-west-2b
+      Events:
+        GetRequest:
+          Type: Api
+          Properties:
+            Path: /graphiql
+            Method: get
+            RestApiId: ApiGateway
+        PostRequest:
+          Type: Api
+          Properties:
+            Path: /graphql
+            Method: post
+            RestApiId: ApiGateway
