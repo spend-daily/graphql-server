@@ -191,13 +191,13 @@ Resources:
           Properties:
             Path: /graphiql
             Method: get
-            RestApiId: ApiGateway
+            RestApiId: GraphQLApi
         PostRequest:
           Type: Api
           Properties:
             Path: /graphql
             Method: post
-            RestApiId: ApiGateway
+            RestApiId: GraphQLApi
 
   GraphQLApi:
     Type: AWS::Serverless::Api
