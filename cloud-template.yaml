@@ -204,14 +204,18 @@ Resources:
     Properties:
       StageName: prod
       DefinitionBody:
-        swagger: 2.0
+        swagger: "2.0"
         info:
-          version: 1.0
-          title: !Ref AWS::StackName
+          version: "1.0"
+          title: graphql-server
         paths:
           "/graphiql":
             get:
-              responses: {}
+              responses:
+                "200":
+                  description: GraphiQL Response
+                  schema:
+                    type: object
               x-amazon-apigateway-integration:
                 uri:
                   Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GraphQLServer.Arn}/invocations
@@ -219,9 +223,11 @@ Resources:
                 type: aws_proxy
           "/graphql":
             post:
-              responses: {}
-              security:
-              - UserPool: []
+              responses:
+                "200":
+                  description: GraphQL Response
+                  schema:
+                    type: object
               x-amazon-apigateway-integration:
                 uri:
                   Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GraphQLServer.Arn}/invocations
