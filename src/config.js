@@ -1,9 +1,14 @@
-const DB_NAME = process.env.DB_NAME || 'spend'
-const DB_USERNAME = process.env.DB_USERNAME || 'postgres'
-const DB_PASSWORD = process.env.DB_PASSWORD
-const DB_ADDRESS = process.env.DB_ADDRESS || 'localhost'
-const DB_PORT = process.env.DB_PORT || 5432
+const DB_NAME = process.env.PGDATABASE || 'spend'
+const DB_USERNAME = process.env.PGUSER || 'postgres'
+const DB_PASSWORD = process.env.PGPASSWORD
+const DB_ADDRESS = process.env.PGHOST || 'localhost'
+const DB_PORT = process.env.PGPORT || 5432
 
-const DB_ENDPOINT = `postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_ADDRESS}:${DB_PORT}/${DB_NAME}`
+const DB_ENDPOINT = encodeURI(
+  `postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_ADDRESS}:${DB_PORT}/${DB_NAME}`
+)
 
-export { DB_ENDPOINT }
+export {
+  DB_ENDPOINT,
+  DB_USERNAME
+}

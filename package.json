@@ -5,6 +5,8 @@
   "main": "lib/index.js",
   "license": "MIT",
   "dependencies": {
+    "pg": "^7.3.0",
+    "pg-pool": "^2.0.3",
     "postgraphql": "^3.5.0"
   },
   "devDependencies": {

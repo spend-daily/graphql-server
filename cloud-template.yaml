@@ -174,11 +174,11 @@ Resources:
       Timeout: 30
       Environment:
         Variables:
-          DB_USERNAME: !ImportValue spend-daily-global-db-user
-          DB_PASSWORD: !ImportValue spend-daily-global-db-password
-          DB_NAME: spend
-          DB_ADDRESS: !ImportValue spend-daily-global-db-address
-          DB_PORT: !ImportValue spend-daily-global-db-port
+          PGUSER: !ImportValue spend-daily-global-db-user
+          PGPASSWORD: !ImportValue spend-daily-global-db-password
+          PGDATABASE: spend
+          PGHOST: !ImportValue spend-daily-global-db-address
+          PGPORT: !ImportValue spend-daily-global-db-port
       VpcConfig:
         SecurityGroupIds:
           - !ImportValue spend-daily-global-security-group-id
@@ -202,6 +202,7 @@ Resources:
   GraphQLApiPolicy:
     Type: AWS::IAM::Policy
     Properties:
+      PolicyName: graphql-api-policy
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -257,6 +258,7 @@ Resources:
                   schema:
                     type: object
               x-amazon-apigateway-integration:
+                credentials: !GetAtt GraphQLApiRole.Arn
                 uri:
                   Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GraphQLServer.Arn}/invocations
                 httpMethod: POST
