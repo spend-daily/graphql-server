@@ -185,3 +185,88 @@ Resources:
         SubnetIds:
           - !ImportValue spend-daily-global-subnet-us-west-2a
           - !ImportValue spend-daily-global-subnet-us-west-2b
+      Events:
+        GetRequest:
+          Type: Api
+          Properties:
+            Path: /graphiql
+            Method: get
+            RestApiId: GraphQLApi
+        PostRequest:
+          Type: Api
+          Properties:
+            Path: /graphql
+            Method: post
+            RestApiId: GraphQLApi
+
+  GraphQLApiPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Resource: !GetAtt GraphQLServer.Arn
+            Effect: "Allow"
+            Action:
+              - "lambda:InvokeFunction"
+      Roles:
+        - !Ref GraphQLApiRole
+
+  GraphQLApiRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                "apigateway.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+
+  GraphQLApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      DefinitionBody:
+        swagger: "2.0"
+        info:
+          version: "1.0"
+          title: graphql-server
+        basePath: "/v1"
+        paths:
+          "/graphiql":
+            get:
+              responses:
+                "200":
+                  description: GraphiQL Response
+                  schema:
+                    type: object
+              x-amazon-apigateway-integration:
+                credentials: !GetAtt GraphQLApiRole.Arn
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GraphQLServer.Arn}/invocations
+                httpMethod: GET
+                type: aws_proxy
+          "/graphql":
+            post:
+              responses:
+                "200":
+                  description: GraphQL Response
+                  schema:
+                    type: object
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GraphQLServer.Arn}/invocations
+                httpMethod: POST
+                type: aws_proxy
+
+  GraphQLPerms:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GraphQLApi
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref GraphQLServer
+      Principal: apigateway.amazonaws.com
